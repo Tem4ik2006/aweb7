@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Аудит безопасности – Лабораторная работа №7</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255,255,255,0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 30px;
+            text-align: center;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            color: #2c3e50;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header p {
+            color: #555;
+            font-size: 1.1rem;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .vuln-block {
+            background: #fff;
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            border-left: 6px solid #667eea;
+        }
+
+        .vuln-title {
+            font-size: 1.6rem;
+            font-weight: bold;
+            color: #764ba2;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #e0e0e0;
+            padding-bottom: 8px;
+        }
+
+        .problem, .threat, .solution {
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+        .problem strong, .threat strong, .solution strong {
+            color: #667eea;
+        }
+
+        .screenshot {
+            text-align: center;
+            margin: 20px 0;
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid #e0e0e0;
+        }
+        .screenshot img {
+            max-width: 100%;
+            border-radius: 12px;
+            border: 1px solid #ccc;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .caption {
+            margin-top: 12px;
+            font-style: italic;
+            color: #777;
+            font-size: 0.9rem;
+        }
+
+        code {
+            background: #f0f0f0;
+            padding: 2px 6px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            color: #c0392b;
+        }
+
+        .back-link {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+        }
+        .back-link a {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 10px 25px;
+            border-radius: 30px;
+            text-decoration: none;
+            display: inline-block;
+            font-weight: bold;
+        }
+        .back-link a:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 12px rgba(0,0,0,0.2);
+        }
+
+        footer {
+            background: #e8e8e8;
+            text-align: center;
+            padding: 15px;
+            font-size: 0.85rem;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>🔒 Аудит безопасности</h1>
+       
+    </div>
+
+    <div class="content">
+        <!-- ========== 1. INCLUDE / UPLOAD ========== -->
+        <div class="vuln-block">
+            <div class="vuln-title">📁 Include / Upload уязвимости</div>
+            <div class="problem">
+                <strong>Проблема:</strong> Возможность удалённого или локального включения файлов (RFI/LFI) через динамические параметры, а также загрузка вредоносных файлов через формы.
+            </div>
+            <div class="threat">
+                <strong>Чем грозило:</strong> Выполнение произвольного кода на сервере, доступ к конфиденциальным файлам, размещение веб‑шела, подмена страниц.
+            </div>
+            <div class="solution">
+                <strong>Решение:</strong> В приложении все <code>include</code> используют только константные имена файлов. Динамическое подключение на основе пользовательского ввода отсутствует. Функционал загрузки файлов также не реализован. Таким образом, уязвимости RFI/LFI и загрузки вредоносных файлов в системе нет.
+            </div>
+            <div class="screenshot">
+                <div style="background:#f0f0f0; padding:20px; border-radius:12px; text-align:center;">
+                    📌 В коде используются только фиксированные пути: <code>include 'form.php';</code>
+                </div>
+                
+            </div>
+        </div>
+
+        <!-- ========== 2. SQL INJECTION ========== -->
+        <div class="vuln-block">
+            <div class="vuln-title">🗄️ SQL Injection</div>
+            <div class="problem">
+                <strong>Проблема:</strong> Отсутствие экранирования пользовательских данных в SQL-запросах может позволить злоумышленнику выполнить произвольный SQL-код.
+            </div>
+            <div class="threat">
+                <strong>Чем грозило:</strong> Чтение, изменение или удаление данных из базы данных, получение информации о структуре таблиц, подмена учётных записей администратора.
+            </div>
+            <div class="solution">
+                <strong>Решение:</strong> В приложении везде используются подготовленные запросы (PDO <code>prepare()</code> + <code>execute()</code>). Это гарантирует, что пользовательские данные никогда не интерпретируются как SQL-код.
+            </div>
+            <div class="screenshot">
+                <img src="3_sql.png" alt="Подготовленный запрос с плейсхолдером">
+                <div class="caption">Скриншот 1: Пример подготовленного запроса – параметр передаётся отдельно, инъекции невозможны</div>
+            </div>
+        </div>
+
+        <!-- ========== 3. XSS ========== -->
+        <div class="vuln-block">
+            <div class="vuln-title">🌐 XSS (межсайтовый скриптинг)</div>
+            <div class="problem">
+                <strong>Проблема:</strong> Данные, введённые пользователем или полученные из базы данных, могут выводиться в HTML без экранирования, что позволяет злоумышленнику внедрить вредоносный JavaScript-код.
+            </div>
+            <div class="threat">
+                <strong>Чем грозило:</strong> Кража сессионных cookies, перенаправление на фишинговые сайты, подмена содержимого страницы, проведение атак от имени пользователя.
+            </div>
+            <div class="solution">
+                <strong>Решение:</strong> Применение функции <code>htmlspecialchars()</code> ко всем данным, выводимым в HTML-контексте. Даже если поле пустое, экранирование предотвращает внедрение тегов.
+            </div>
+            <div class="screenshot">
+                <img src="xss1.png" alt="Экранирование поля биографии">
+                <div class="caption">Скриншот 2: Использование htmlspecialchars() при выводе значения textarea – все спецсимволы преобразуются в HTML-сущности</div>
+            </div>
+        </div>
+
+        <!-- ========== 4. INFORMATION DISCLOSURE ========== -->
+        <div class="vuln-block">
+            <div class="vuln-title">📄 Information Disclosure (раскрытие информации)</div>
+            <div class="problem">
+                <strong>Проблема:</strong> При ошибке подключения к базе данных или выполнении SQL-запроса приложение выводило детальное сообщение об ошибке, содержащее логин, хост, имя базы, пути к файлам.
+            </div>
+            <div class="threat">
+                <strong>Чем грозило:</strong> Злоумышленник получал информацию о внутреннем устройстве системы (версия СУБД, логин, имена таблиц), что упрощает подготовку целенаправленных атак.
+            </div>
+            <div class="solution">
+                <strong>Решение:</strong> Замена прямого вывода сообщения исключения на общее уведомление, а детали ошибки записываются в серверный лог с помощью <code>error_log()</code>. Пользователь видит только "Внутренняя ошибка сервера".
+            </div>
+            <div class="screenshot">
+                <img src="2_id.png" alt="Исходный код с выводом деталей ошибки">
+                <div class="caption">Скриншот 3: Исходный код – вывод детального сообщения (уязвимо)</div>
+            </div>
+            <div class="screenshot">
+                <strong>Исправленный вариант:</strong><br>
+                 <img src="01_id.png" alt="Исходный код с выводом деталей ошибки">
+                <div class="caption">Детали ошибки уходят в лог, пользователь получает общее сообщение – уязвимость устранена.</div>
+            </div>
+        </div>
+
+        <!-- Итоговая таблица -->
+        <div class="vuln-block" style="background: #fafafc;">
+            <div class="vuln-title">📊 Результаты аудита</div>
+            
+            <p style="margin-top:20px;">Все выявленные уязвимости устранены. Приложение соответствует требованиям безопасности.</p>
+        </div>
+    </div>
+
+    <div class="back-link">
+        <a href="http://u82321.kubsu-dev.ru/w6/">← Вернуться к анкете</a>
+    </div>
+    
+</div>
+</body>
+</html>
